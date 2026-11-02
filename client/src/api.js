@@ -74,4 +74,22 @@ export const api = {
       method: "POST",
       body: JSON.stringify(d),
     }),
+
+/////////////////////////////////////expenses
+      // Expenses
+  getExpenses: () =>
+    req("/expenses"),
+
+  createExpense: (data) =>
+    req("/expenses", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  deleteExpense: (id) =>
+    req("/expenses/" + id, {
+      method: "DELETE",
+    }),
 };
+
+

@@ -21,6 +21,11 @@ import Tenants from "./components/Tenants";
 import Year from "./components/Year";
 import { TenantForm, PaymentForm, Detail, Settings } from "./components/Models";
 
+
+import Expenses from "./components/Expenses";
+import ExpenseForm from "./components/ExpenseForm";
+
+
 const useEffect = (effect, dependencies) =>
   reactUseEffect(() => {
     effect();
@@ -42,6 +47,8 @@ function App() {
   const [modal, setModal] = useState(null);
   const [error, setError] = useState("");
 
+  const [expenses, setExpenses] = useState([]);
+
   // --------------------------------------------------
   // LOAD DATA
   // --------------------------------------------------
@@ -59,7 +66,15 @@ function App() {
       .catch((e) => setError(e.message));
   };
 
+  const reloadExpenses = () => {
+  api
+    .getExpenses()
+    .then((data) => setExpenses(data))
+    .catch((e) => setError(e.message));
+};
+
   useEffect(reload, []);
+  useEffect(reloadExpenses, []);
 
   // --------------------------------------------------
   // THEME
@@ -238,6 +253,32 @@ function App() {
       tenant,
     });
   };
+
+
+  ///Expenses
+  // SAVE EXPENSE
+const saveExpense = async (form) => {
+  try {
+    await api.createExpense(form);
+
+    await reloadExpenses();
+
+    setModal(null);
+  } catch (e) {
+    alert(e.message);
+  }
+};
+
+// DELETE EXPENSE
+const deleteExpense = async (id) => {
+  try {
+    await api.deleteExpense(id);
+
+    await reloadExpenses();
+  } catch (e) {
+    alert(e.message);
+  }
+};
   return (
     <>
       <main>
@@ -288,23 +329,35 @@ function App() {
             }}
           />
         )}
+
+        {/* EXPENSES TAB */}
+{tab === "expenses" && (
+  <Expenses
+    expenses={expenses}
+    month={month}
+    setMonth={setMonth}
+    setModal={setModal}
+    onDelete={deleteExpense}
+  />
+)}
       </main>
 
       {/* NAVIGATION */}
       <nav>
         {[
-          ["home", "Monthly"],
-          ["tenants", "Tenants"],
-          ["year", "Year"],
-        ].map(([id, label]) => (
-          <button
-            className={tab === id ? "on" : ""}
-            onClick={() => setTab(id)}
-            key={id}
-          >
-            {label}
-          </button>
-        ))}
+  ["home", "Monthly"],
+  ["tenants", "Tenants"],
+  ["year", "Year"],
+  ["expenses", "Expenses"],
+].map(([id, label]) => (
+  <button
+    className={tab === id ? "on" : ""}
+    onClick={() => setTab(id)}
+    key={id}
+  >
+    {label}
+  </button>
+))}
       </nav>
 
       {/* NEW TENANT */}
@@ -390,6 +443,15 @@ function App() {
           onClose={() => setModal(null)}
         />
       )}
+
+
+      {/* EXPENSE FORM */}
+{modal?.type === "expense" && (
+  <ExpenseForm
+    onClose={() => setModal(null)}
+    onSave={saveExpense}
+  />
+)}
 
     
     </>

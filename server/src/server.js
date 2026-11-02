@@ -7,6 +7,8 @@ import paymentRoutes from './routes/paymentRoutes.js';
 import settingsRoutes from './routes/settingsRoutes.js';
 import backupRoutes from './routes/backupRoutes.js';
 
+import expenseRoutes from './routes/expenseRoutes.js';
+
 const app = express();
 app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173' }));
 app.use(express.json({ limit: '2mb' }));
@@ -15,6 +17,8 @@ app.use('/api/tenants', tenantRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/backup', backupRoutes);
+
+app.use('/api/expenses', expenseRoutes);
 app.use((error, _request, response, _next) => {
   console.error(error);
   response.status(error.status || 500).json({ message: error.message || 'Something went wrong.' });
