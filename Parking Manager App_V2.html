@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Parking Manager</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--tx:#1b1f24;--mu:#6b7280;--ac:#0f766e;--ac2:#ccfbf1;--ok:#15803d;--okb:#dcfce7;--wa:#b45309;--wab:#fef3c7;--er:#b91c1c;--erb:#fee2e2;--bd:#e5e7eb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1214;--card:#181c20;--tx:#eef0f2;--mu:#9aa3ad;--ac:#2dd4bf;--ac2:#134e4a;--ok:#4ade80;--okb:#14361f;--wa:#fbbf24;--wab:#3a2c0a;--er:#f87171;--erb:#3f1414;--bd:#2a3036}}
+:root[data-theme="dark"]{--bg:#0f1214;--card:#181c20;--tx:#eef0f2;--mu:#9aa3ad;--ac:#2dd4bf;--ac2:#134e4a;--ok:#4ade80;--okb:#14361f;--wa:#fbbf24;--wab:#3a2c0a;--er:#f87171;--erb:#3f1414;--bd:#2a3036}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px}
+#app{max-width:560px;margin:0 auto;padding:14px 14px 90px}
+h1{font-size:20px;margin:4px 0 12px}.mu{color:var(--mu)}.sm{font-size:12.5px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}.grid .card{margin:0}
+.big{font-size:20px;font-weight:700;margin-top:2px}
+.row{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.mon{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.mon b{font-size:16px}
+button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;padding:8px 12px}
+.pri{background:var(--ac);color:#fff;border-color:var(--ac)}:root[data-theme="dark"] .pri{color:#042f2e}
+.dng{color:var(--er)}.sq{width:38px;padding:8px 0}
+.chip{font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.paid{background:var(--okb);color:var(--ok)}.part{background:var(--wab);color:var(--wa)}.unp{background:var(--erb);color:var(--er)}.vac{background:var(--bd);color:var(--mu)}
+.slot{width:38px;height:38px;border-radius:10px;background:var(--ac2);color:var(--ac);display:grid;place-items:center;font-weight:700;flex:none}
+.item{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd)}.item:last-child{border:0}
+.item .m{flex:1;min-width:0}.item .m div{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--bd);display:flex;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;border:0;border-radius:0;padding:14px 0;background:none;color:var(--mu);font-weight:600}nav button.on{color:var(--ac)}
+.fab{position:fixed;right:16px;bottom:calc(70px + env(safe-area-inset-bottom,0px));border-radius:99px;padding:12px 18px;box-shadow:0 4px 14px #0003}
+.ov{position:fixed;inset:0;background:#0007;display:flex;align-items:flex-end;justify-content:center;z-index:9}
+.sheet{background:var(--card);width:100%;max-width:560px;max-height:92%;overflow:auto;border-radius:18px 18px 0 0;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+label{display:block;font-size:12.5px;color:var(--mu);margin:10px 0 3px}
+input,select{width:100%;font:inherit;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bar{height:8px;background:var(--bd);border-radius:9px;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:var(--ac)}
+.note{background:var(--wab);color:var(--wa);padding:8px 12px;border-radius:10px;font-size:12.5px;margin-bottom:10px}
+.empty{text-align:center;padding:26px 0;color:var(--mu)}
+@media print{#app,nav,.fab,.pb{display:none!important}.ov{position:static;background:none}.sheet{max-height:none}}
+.wa{background:#25D366;border-color:#25D366;flex:none;display:flex;align-items:center;justify-content:center;padding:0;height:38px}.wa svg{fill:#fff;width:22px;height:22px;display:block}.sq,.chip{flex:none}
+nav button{font-size:12px}.tot{font-weight:700}
+.yr{display:grid;grid-template-columns:34px repeat(4,1fr);gap:6px;font-size:12px;padding:7px 0;border-bottom:1px solid var(--bd);text-align:right}.yr span:first-child{text-align:left}
+.ch-g{stroke:var(--bd)}.ch-t{fill:var(--mu);font-size:10px}.ch-l{fill:none;stroke:var(--ac);stroke-width:2;stroke-linejoin:round}.ch-a{fill:var(--ac);opacity:.12}.ch-d{fill:var(--ac)}.ch-v{stroke:var(--wa);stroke-dasharray:4 3;stroke-width:1.2}.ch-b{fill:var(--ac)}.rng button{padding:6px 10px}.rng button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+</style></head><body>
+<div id="app"></div>
+<nav><button data-t="dash" onclick="go('dash')">Dash</button><button data-t="home" onclick="go('home')">Monthly</button><button data-t="tenants" onclick="go('tenants')">Tenants</button><button data-t="daily" onclick="go('daily')">Daily</button><button data-t="exp" onclick="go('exp')">Expenses</button><button data-t="year" onclick="go('year')">Year</button></nav>
+<div id="modal"></div>
+<script>
+const CAP=40;
+const WA_ICON='<svg width="20" height="20" viewBox="0 0 24 24" aria-label="WhatsApp"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>';
+let tenants=[],payments=[],db=null,tab='dash',month=ym(new Date()),usingLocal=false,settings={lateFee:0,grace:5,slipRate:20,expItems:['Security salary','Security daily batta','EB payment','Others']},yr=new Date().getFullYear(),curMsg='',curTid='',bikes=[],extras=[],slips=[],expenses=[],day=new Date().toLocaleDateString('en-CA'),dtime=new Date().toTimeString().slice(0,5),fromDT='',toDT='',dr=30;
+function ym(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function idx(m){const[a,b]=m.split('-').map(Number);return a*12+b-1}
+function shift(m,n){const i=idx(m)+n;return Math.floor(i/12)+'-'+String(i%12+1).padStart(2,'0')}
+function mlabel(m){const[a,b]=m.split('-');return new Date(a,b-1,1).toLocaleString('en-IN',{month:'long',year:'numeric'})}
+const inr=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const today=()=>new Date().toLocaleDateString('en-CA');
+const snap=t=>t.slice(0,14)+String(Math.floor(+t.slice(14,16)/15)*15).padStart(2,'0');
+const nowDT=()=>today()+'T'+new Date().toTimeString().slice(0,5);
+
+// ---------- storage: this browser's localStorage ----------
+// To use your own database later, replace only init(), save(), del() below.
+const K='pk_data';
+function persist(){try{localStorage.setItem(K,JSON.stringify({tenants,payments,settings,bikes,extras,slips,expenses}))}catch(e){alert('Could not save: browser storage is full or blocked.')}}
+function init(){try{const d=JSON.parse(localStorage.getItem(K)||'{}');tenants=d.tenants||[];payments=d.payments||[];bikes=d.bikes||[];extras=d.extras||[];slips=d.slips||[];expenses=d.expenses||[];settings={...settings,...(d.settings||{})}}catch(e){}setDay(day);render()}
+async function save(col,obj){
+  if(col==='settings'){settings={...settings,...obj};persist();render();return}
+  const id=obj.id||uid(),o={...obj,id},arr=col==='tenants'?tenants:payments,i=arr.findIndex(x=>x.id===id);
+  i<0?arr.push(o):arr[i]=o;persist();render();return id;
+}
+async function del(col,id){if(col==='tenants')tenants=tenants.filter(x=>x.id!==id);else payments=payments.filter(x=>x.id!==id);persist();render()}
+async function backup(){const txt=JSON.stringify({tenants,payments,settings,bikes,extras,slips,expenses},null,1),name='parking-backup-'+today()+'.json';
+  try{const dl=window.claude?await claude.use('downloads'):null;if(dl){await dl.save({filename:name,data:txt});return}}catch(e){if(e&&e.code==='declined')return}
+  const b=new Blob([txt],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click()}
+function restore(){const i=document.createElement('input');i.type='file';i.accept='.json';i.onchange=()=>{const f=i.files[0];if(!f)return;f.text().then(t=>{try{const d=JSON.parse(t);if(!Array.isArray(d.tenants)||!Array.isArray(d.payments))throw 0;if(!confirm('Replace ALL current data with this backup?'))return;tenants=d.tenants;payments=d.payments;bikes=d.bikes||[];extras=d.extras||[];slips=d.slips||[];expenses=d.expenses||[];settings={...settings,...(d.settings||{})};persist();closeM();setDay(day);render()}catch(e){alert('Not a valid backup file.')}})};i.click()}
+
+// ---------- calculations ----------
+const pays=(t,k)=>payments.filter(p=>p.tid===t.id&&p.kind===k);
+const sum=a=>a.reduce((s,p)=>s+Number(p.amount||0),0);
+function active(t,m){return idx(m)>=idx(t.start)&&(!t.end||idx(m)<=idx(t.end))}
+function pending(t,upto){ // cumulative rent outstanding up to a month
+  const last=t.end&&idx(t.end)<idx(upto)?t.end:upto;
+  const n=Math.max(0,idx(last)-idx(t.start)+1);
+  return t.rent*n-sum(pays(t,'rent').filter(p=>idx(p.month)<=idx(upto)));
+}
+const paidIn=(t,m)=>sum(pays(t,'rent').filter(p=>p.month===m));
+const deposit=t=>sum(pays(t,'deposit'))-sum(pays(t,'refund'));
+const liveTenants=()=>tenants.filter(t=>!t.end||idx(t.end)>=idx(month)).sort((a,b)=>a.slot-b.slot);
+
+// ---------- views ----------
+function go(t){tab=t;render()}
+function shiftM(n){month=shift(month,n);render()}
+function render(){
+  document.querySelectorAll('nav button').forEach(b=>b.className=b.dataset.t===tab?'on':'');
+  const note='';
+  document.getElementById('app').innerHTML=note+(tab==='home'?home():tab==='dash'?dashView():tab==='year'?yearView():tab==='daily'?dailyView():tab==='exp'?expView():list())+
+    (tab==='tenants'?'<button class="pri fab" onclick="tenantForm()">+ Add tenant</button>':tab==='exp'?'<button class="pri fab" onclick="expForm()">+ Add expense</button>':'');
+}
+function chip(t){
+  const due=t.rent,paid=paidIn(t,month);
+  if(!active(t,month))return'<span class="chip vac">Not active</span>';
+  return paid>=due?'<span class="chip paid">Paid</span>':paid>0?'<span class="chip part">Partial</span>':'<span class="chip unp">Unpaid</span>';
+}
+function home(){
+  const L=tenants.filter(t=>active(t,month)),col=L.reduce((s,t)=>s+paidIn(t,month),0),exp=L.reduce((s,t)=>s+t.rent,0);
+  const pend=tenants.reduce((s,t)=>s+Math.max(0,pending(t,month)),0),dep=tenants.reduce((s,t)=>s+deposit(t),0);
+  const pct=exp?Math.min(100,col/exp*100):0,D=dsum(month),X=sum(inMonth(expenses,month));
+  const rows=L.sort((a,b)=>a.slot-b.slot).map(t=>{const p=Math.max(0,pending(t,month));
+    return`<div class="item"><div class="slot">${esc(t.slot)}</div><div class="m"><div><b>${esc(t.name)}</b></div><div class="mu sm">${esc(t.car||'')} · Paid ${inr(paidIn(t,month))} / ${inr(t.rent)}${p?` · <span style="color:var(--er)">Due ${inr(p)}</span>`:''}${lateDue(t)?` · <span style="color:var(--wa)">Late ${inr(lateDue(t))}</span>`:''}</div></div>${chip(t)}${p||lateDue(t)?`<button class="sq" onclick="remindForm('${t.id}')">🔔</button>`:''}<button class="sq" onclick="payForm('${t.id}')">＋</button></div>`}).join('');
+  return`<div class="row"><h1>Parking Manager</h1><button class="sq" onclick="settingsForm()">⚙</button></div>
+  <div class="mon"><button class="sq" onclick="shiftM(-1)">‹</button><b>${mlabel(month)}</b><button class="sq" onclick="shiftM(1)">›</button></div>
+  <div class="grid"><div class="card"><div class="mu sm">Collected</div><div class="big" style="color:var(--ok)">${inr(col)}</div></div>
+  <div class="card"><div class="mu sm">Total pending</div><div class="big" style="color:var(--er)">${inr(pend)}</div></div>
+  <div class="card"><div class="mu sm">Deposits held</div><div class="big">${inr(dep)}</div></div>
+  <div class="card"><div class="mu sm">Slots occupied</div><div class="big">${L.length} / ${CAP}</div></div>
+  <div class="card"><div class="mu sm">Late fees due</div><div class="big" style="color:var(--wa)">${inr(tenants.reduce((s,t)=>s+lateDue(t),0))}</div></div>
+  <div class="card"><div class="mu sm">Late fee rule</div><div class="sm" style="margin-top:4px">${settings.lateFee?inr(settings.lateFee)+' if unpaid after day '+settings.grace:'Off · set in ⚙'}</div></div></div>
+  <div class="card"><div class="row sm"><span class="mu">This month's rent</span><span>${inr(col)} of ${inr(exp)}</span></div><div class="bar"><i style="width:${pct}%"></i></div></div>
+  <div class="card"><b>Revenue &amp; expenses · ${mlabel(month)}</b>${[['Rent collected',col],['In-slips used',null,D.n],['Cash',D.cash],['PayTM',D.pt],['Overtime (included)',D.ot],['Short amount',D.short],['Daily collection total',D.total]].map(a=>`<div class="item"><div class="m">${a[0]}</div><b${a[0]==='Short amount'?' style="color:var(--er)"':''}>${a[1]===null?a[2]:inr(a[1])}</b></div>`).join('')}
+  <div class="item tot"><div class="m">Total revenue<div class="mu sm" style="font-weight:400">Rent ${inr(col)} + daily ${inr(D.total)}</div></div><span style="color:var(--ok);font-size:18px">${inr(col+D.total)}</span></div>
+  <div class="item"><div class="m">Total expenses</div><b style="color:var(--er)">− ${inr(X)}</b></div>
+  <div class="item tot"><div class="m">Net (revenue − expenses)</div><span style="color:${col+D.total-X<0?'var(--er)':'var(--ok)'};font-size:18px">${inr(col+D.total-X)}</span></div></div>
+  <div class="card">${rows||'<div class="empty">No tenants yet.<br>Open the Tenants tab to add one.</div>'}</div>`;
+}
+function list(){
+  const rows=liveTenants().map(t=>{const p=Math.max(0,pending(t,ym(new Date())))+lateDue(t);
+    return`<div class="item" onclick="detail('${t.id}')"><div class="slot">${esc(t.slot)}</div><div class="m"><div><b>${esc(t.name)}</b></div><div class="mu sm">${esc(t.car||'')} · ${inr(t.rent)}/mo · Deposit ${inr(deposit(t))}</div><div style="margin-top:3px">${p?`<span class="chip unp">${inr(p)} due</span>`:'<span class="chip paid">Clear</span>'}</div></div><button class="sq wa" title="WhatsApp" onclick="event.stopPropagation();quickWA('${t.id}')">${WA_ICON}</button></div>`}).join('');
+  return`<h1>Tenants <span class="mu sm">${liveTenants().length}/${CAP}</span></h1><div class="card">${rows||'<div class="empty">No tenants yet. Tap “Add tenant”.</div>'}</div>`;
+}
+
+// ---------- modals ----------
+function open(html){document.getElementById('modal').innerHTML=`<div class="ov" onclick="if(event.target===this)closeM()"><div class="sheet">${html}</div></div>`}
+function closeM(){document.getElementById('modal').innerHTML=''}
+const v=id=>document.getElementById(id).value;
+function tenantForm(id){
+  const t=tenants.find(x=>x.id===id)||{start:month,slot:'',rent:'',deposit:''};
+  const used=new Set(tenants.filter(x=>x.id!==id&&(!x.end)).map(x=>String(x.slot)));
+  let opts='';for(let i=1;i<=CAP;i++)if(!used.has(String(i))||String(t.slot)===String(i))opts+=`<option ${String(t.slot)===String(i)?'selected':''}>${i}</option>`;
+  open(`<h1>${id?'Edit tenant':'New tenant'}</h1>
+  <label>Name</label><input id="f_name" value="${esc(t.name||'')}">
+  <div class="two"><div><label>Phone</label><input id="f_ph" type="tel" value="${esc(t.phone||'')}"></div><div><label>Car number</label><input id="f_car" value="${esc(t.car||'')}"></div></div>
+  <div class="two"><div><label>Slot</label><select id="f_slot">${opts}</select></div><div><label>Start month</label><input id="f_start" type="month" value="${t.start}"></div></div>
+  <div class="two"><div><label>Monthly rent (₹)</label><input id="f_rent" type="number" inputmode="numeric" value="${t.rent}"></div>
+  ${id?'<div></div>':`<div><label>Deposit received (₹)</label><input id="f_dep" type="number" inputmode="numeric" value="0"></div>`}</div>
+  <div class="row" style="margin-top:16px"><button onclick="closeM()">Cancel</button><button class="pri" onclick="saveTenant('${id||''}')">Save</button></div>`);
+}
+async function saveTenant(id){
+  const name=v('f_name').trim(),rent=Number(v('f_rent'));
+  if(!name||!rent)return alert('Enter a name and monthly rent.');
+  const old=tenants.find(x=>x.id===id)||{};
+  const obj={...old,name,phone:v('f_ph'),car:v('f_car').trim().toUpperCase(),slot:Number(v('f_slot')),start:v('f_start')||month,rent};
+  if(id)obj.id=id;
+  const tid=await save('tenants',obj);
+  if(!id){const d=Number(v('f_dep'));if(d>0)await save('payments',{tid,kind:'deposit',amount:d,month:obj.start,date:today(),note:'Initial deposit'})}
+  closeM();
+}
+function payForm(tid,kind){
+  const t=tenants.find(x=>x.id===tid),p=Math.max(0,pending(t,month));
+  open(`<h1>Record payment</h1><div class="mu sm">${esc(t.name)} · Slot ${esc(t.slot)}${p?` · Pending ${inr(p)}`:''}</div>
+  <label>Type</label><select id="p_kind" onchange="defAmt(this.value,'${tid}')"><option value="rent" ${kind!=='deposit'?'selected':''}>Monthly rent</option><option value="deposit" ${kind==='deposit'?'selected':''}>Deposit received</option><option value="refund">Deposit refunded</option><option value="latefee">Late fee</option></select>
+  <div class="two"><div><label>Amount (₹)</label><input id="p_amt" type="number" inputmode="numeric" value="${kind==='deposit'?'':(p||t.rent)}"></div><div><label>For month</label><input id="p_m" type="month" value="${month}"></div></div>
+  <label>Date paid</label><input id="p_d" type="datetime-local" value="${nowDT()}">
+  <label>Note (optional)</label><input id="p_n" placeholder="Cash / UPI ref…">
+  <div class="row" style="margin-top:16px"><button onclick="closeM()">Cancel</button><button class="pri" onclick="savePay('${tid}')">Save</button></div>`);
+}
+async function savePay(tid){
+  const a=Number(v('p_amt'));if(!a||a<=0)return alert('Enter a valid amount.');
+  await save('payments',{tid,kind:v('p_kind'),amount:a,month:v('p_m')||month,date:v('p_d'),note:v('p_n')});closeM();
+}
+function detail(id){
+  const t=tenants.find(x=>x.id===id);if(!t)return closeM();
+  const cur=ym(new Date()),p=Math.max(0,pending(t,cur));
+  const h=payments.filter(x=>x.tid===id).sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(x=>{
+    const lab={rent:'Rent',deposit:'Deposit in',refund:'Deposit out',latefee:'Late fee'}[x.kind];
+    return`<div class="item"><div class="m"><div><b>${lab}</b> · ${x.kind==='rent'?mlabel(x.month):''}</div><div class="mu sm">${esc(x.date||'')} ${esc(x.note||'')}</div></div><b style="color:${x.kind==='refund'?'var(--er)':'var(--ok)'}">${x.kind==='refund'?'−':'+'}${inr(x.amount)}</b><button class="sq" onclick="receipt('${x.id}')">🧾</button><button class="sq dng" onclick="if(confirm('Delete this entry?')){del('payments','${x.id}').then(()=>detail('${id}'))}">✕</button></div>`}).join('');
+  open(`<div class="row"><h1 style="margin:0">${esc(t.name)}</h1><span class="slot">${esc(t.slot)}</span></div>
+  <div class="mu sm" style="margin:4px 0 10px">${esc(t.car||'—')} · ${esc(t.phone||'no phone')} · since ${mlabel(t.start)}</div>
+  <div class="grid"><div class="card"><div class="mu sm">Rent / month</div><div class="big">${inr(t.rent)}</div></div><div class="card"><div class="mu sm">Pending till ${mlabel(cur)}</div><div class="big" style="color:${p?'var(--er)':'var(--ok)'}">${inr(p)}</div></div>
+  <div class="card"><div class="mu sm">Deposit held</div><div class="big">${inr(deposit(t))}</div></div>${t.phone?`<a class="card" style="text-decoration:none;color:inherit" href="tel:${esc(t.phone)}"><div class="mu sm">Call</div><div class="big">📞</div></a>`:'<div></div>'}</div>
+  ${lateDue(t)?`<div class="note">Late fees due: ${inr(lateDue(t))}</div>`:''}
+  <div class="row" style="gap:8px;margin-bottom:10px"><button class="pri" style="flex:1" onclick="month=ym(new Date());payForm('${id}')">Add payment</button><button onclick="remindForm('${id}')">🔔</button><button class="sq wa" title="WhatsApp" onclick="quickWA('${id}')">${WA_ICON}</button><button onclick="tenantForm('${id}')">Edit</button></div>
+  <div class="card" style="margin-bottom:10px">${h||'<div class="empty">No payments yet.</div>'}</div>
+  <div class="row"><button class="dng" onclick="vacate('${id}')">Vacate slot</button><button onclick="closeM()">Close</button></div>`);
+}
+async function vacate(id){
+  const t=tenants.find(x=>x.id===id),m=prompt('Last rented month (YYYY-MM):',ym(new Date()));
+  if(!m||!/^\d{4}-\d{2}$/.test(m))return;
+  await save('tenants',{...t,end:m});closeM();
+}
+// ---------- late fees ----------
+function lateDue(t){
+  if(!settings.lateFee)return 0;
+  const cur=ym(new Date()),last=t.end&&idx(t.end)<idx(cur)?t.end:cur;let c=0;
+  for(let m=t.start;idx(m)<=idx(last);m=shift(m,1)){
+    const dl=m+'-'+String(settings.grace).padStart(2,'0');
+    const ok=sum(pays(t,'rent').filter(p=>p.month===m&&(p.date||'').slice(0,10)<=dl));
+    if(today()>dl&&ok<t.rent)c++;
+  }
+  return Math.max(0,c*settings.lateFee-sum(pays(t,'latefee')));
+}
+function defAmt(k,id){const t=tenants.find(x=>x.id===id);document.getElementById('p_amt').value=k==='rent'?(Math.max(0,pending(t,v('p_m')||month))||t.rent):k==='latefee'?(lateDue(t)||''):''}
+function settingsForm(){
+  open(`<h1>Late fee settings</h1><div class="mu sm">A late fee is added for every month whose rent isn't fully paid by the due day. Set 0 to turn off.</div>
+  <div class="two"><div><label>Late fee per month (₹)</label><input id="s_fee" type="number" inputmode="numeric" value="${settings.lateFee}"></div><div><label>Due day of month</label><input id="s_gr" type="number" min="1" max="28" value="${settings.grace}"></div></div>
+  <div class="row" style="margin-top:16px"><button onclick="closeM()">Cancel</button><button class="pri" onclick="saveSettings()">Save</button></div>
+  <div class="note" style="margin-top:14px">Data is saved on this device only. Download a backup regularly.</div>
+  <div class="two"><button onclick="backup()">Download backup</button><button onclick="restore()">Restore backup</button></div>`);
+}
+async function saveSettings(){
+  const g=Math.min(28,Math.max(1,Number(v('s_gr'))||5));
+  await save('settings',{lateFee:Math.max(0,Number(v('s_fee'))||0),grace:g});closeM();
+}
+
+// ---------- reminders & receipts ----------
+function phone(t){let d=(t.phone||'').replace(/\D/g,'');if(d.length===10)d='91'+d;return d}
+function sendMsg(kind){
+  const t=tenants.find(x=>x.id===curTid),d=phone(t);
+  if(!d)return alert('Add a phone number for this tenant first (Edit).');
+  const u=kind==='wa'?`https://wa.me/${d}?text=${encodeURIComponent(curMsg)}`:`sms:+${d}?body=${encodeURIComponent(curMsg)}`;
+  window.open(u,'_blank');
+}
+function copyMsg(){try{navigator.clipboard.writeText(curMsg).then(()=>alert('Copied'))}catch(e){alert('Copy not available')}}
+function sendBtns(back){return`<div class="two pb" style="margin-top:12px"><button class="pri" onclick="sendMsg('wa')">WhatsApp</button><button onclick="sendMsg('sms')">SMS</button><button onclick="copyMsg()">Copy text</button><button onclick="${back}">Back</button></div>`}
+function remindForm(id){
+  const t=tenants.find(x=>x.id===id),cur=ym(new Date()),p=Math.max(0,pending(t,cur)),l=lateDue(t);
+  curTid=id;
+  curMsg=`Hello ${t.name}, gentle reminder: parking rent for slot ${t.slot}${t.car?' ('+t.car+')':''} is pending. Rent due: ${inr(p)}`+(l?`, late fee: ${inr(l)}`:'')+`. Total: ${inr(p+l)}. Please pay at the earliest. Thank you!`;
+  open(`<h1>Payment reminder</h1><div class="mu sm">${esc(t.name)} · ${esc(t.phone||'no phone saved')}</div>
+  <label>Message (editable)</label><textarea id="msg" rows="6" style="width:100%;font:inherit;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)" oninput="curMsg=this.value">${esc(curMsg)}</textarea>${sendBtns("closeM()")}`);
+}
+function receipt(pid){
+  const x=payments.find(y=>y.id===pid),t=x&&tenants.find(y=>y.id===x.tid);if(!t)return;
+  curTid=t.id;
+  const no='R'+pid.slice(-6).toUpperCase(),lab={rent:'Monthly rent – '+mlabel(x.month),deposit:'Deposit received',refund:'Deposit refunded',latefee:'Late fee'}[x.kind];
+  const bal=Math.max(0,pending(t,ym(new Date())));
+  curMsg=`🧾 Parking Receipt ${no}\nDate: ${x.date}\nName: ${t.name}\nSlot: ${t.slot}${t.car?' ('+t.car+')':''}\n${lab}\nAmount: ${inr(x.amount)}\nRent balance pending: ${inr(bal)}\nThank you!`;
+  open(`<div class="card" style="white-space:pre-wrap;line-height:1.6;margin:0">${esc(curMsg)}</div>${sendBtns("detail('"+t.id+"')")}<div class="pb" style="margin-top:10px"><button style="width:100%" onclick="window.print()">Print / Save PDF</button></div>`);
+}
+
+function quickWA(id){
+  const t=tenants.find(x=>x.id===id),d=phone(t);
+  if(!d)return alert('No phone number saved for '+t.name+'. Open the tenant and tap Edit to add one.');
+  const cur=ym(new Date()),p=Math.max(0,pending(t,cur)),l=lateDue(t);
+  const msg=p+l>0?`Hello ${t.name}, gentle reminder: parking rent for slot ${t.slot}${t.car?' ('+t.car+')':''} is pending. Rent due: ${inr(p)}`+(l?`, late fee: ${inr(l)}`:'')+`. Total: ${inr(p+l)}. Please pay at the earliest. Thank you!`:`Hello ${t.name}, `;
+  window.open(`https://wa.me/${d}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+// ---------- daily modules: bike rent, overtime, slips, expenses ----------
+function put(name,o){const arr=name==='bikes'?bikes:name==='extras'?extras:name==='slips'?slips:expenses;const i=arr.findIndex(x=>x.id===o.id);i<0?arr.push(o):arr[i]=o;persist();render()}
+function rm(name,id){const f=a=>a.filter(x=>x.id!==id);if(name==='bikes')bikes=f(bikes);else if(name==='extras')extras=f(extras);else expenses=f(expenses);persist();render()}
+const byDay=(a,d)=>a.filter(x=>x.date===d);
+const sm=(a,m)=>sum(a.filter(x=>(x.mode||'cash')===m));
+const inMonth=(a,m)=>a.filter(x=>(x.date||'').slice(0,7)===m);
+function setDay(d){day=d;const sl=slips.find(x=>x.date===d);fromDT=(sl&&sl.from)||d+'T00:00';toDT=(sl&&sl.to)||(d===today()?snap(nowDT()):d+'T23:45')}
+function dtPick(k,val){const[d,t]=snap(val||nowDT()).split('T'),[h,m]=t.split(':');
+  const opt=(a,sel)=>a.map(x=>`<option ${x===sel?'selected':''}>${x}</option>`).join('');
+  return`<div style="display:grid;grid-template-columns:1fr auto auto;gap:6px"><input type="date" id="${k}_d" value="${d}" onchange="dtChange('${k}')"><select id="${k}_h" onchange="dtChange('${k}')">${opt(Array.from({length:24},(_,i)=>String(i).padStart(2,'0')),h)}</select><select id="${k}_m" onchange="dtChange('${k}')">${opt(['00','15','30','45'],m)}</select></div>`}
+function dtChange(k){const d=v(k+'_d');if(!d)return;const val=d+'T'+v(k+'_h')+':'+v(k+'_m');if(k==='f'){fromDT=val;if(d!==day){day=d;render()}}else toDT=val}
+function dshift(n){const d=new Date(day+'T00:00:00');d.setDate(d.getDate()+n);setDay(d.toLocaleDateString('en-CA'));render()}
+function dbar(){return`<div class="mon"><button class="sq" onclick="dshift(-1)">‹</button><input type="datetime-local" value="${day}T${dtime}" style="width:auto" onchange="if(this.value){day=this.value.slice(0,10);dtime=this.value.slice(11,16);render()}"><button class="sq" onclick="dshift(1)">›</button></div>`}
+const nv=id=>{const x=v(id).trim();return x===''?null:Number(x)};
+function dayFig(x){x=x||{};const n=x.start!=null&&x.end!=null&&x.end>=x.start?x.end-x.start+1:0,amt=n*(x.rate||0),c=x.cash||0,p=x.paytm||0,o=x.over||0,exp=amt+o,none=!c&&!p,col=none?exp:c+p;
+  return{n,amt,ot:o,exp,cash:none?exp:c,pt:p,total:col,short:none?0:Math.max(0,exp-col),diff:none?0:col-exp,entered:!none}}
+function dsum(m){const r={n:0,cash:0,pt:0,ot:0,short:0,total:0,days:0};inMonth(slips,m).forEach(x=>{const f=dayFig(x);r.n+=f.n;r.cash+=f.cash;r.pt+=f.pt;r.ot+=f.ot;r.short+=f.short;r.total+=f.total;r.days++});return r}
+const calcTxt=(n,r,o)=>`Slips used: <b>${n}</b> × ₹${r} = <b>${inr(n*r)}</b>`+(o?` + overtime ${inr(o)} = <b>${inr(n*r+o)}</b>`:'');
+function liveCalc(){
+  const st=nv('sl_s'),en=nv('sl_e'),r=Number(v('sl_r'))||0,n=st!==null&&en!==null&&en>=st?en-st+1:0,o=Number(v('sl_o'))||0,c=Number(v('sl_c'))||0,p=Number(v('sl_p'))||0;
+  document.getElementById('sl_calc').innerHTML=calcTxt(n,r,o);
+  document.getElementById('sl_sh').value=(c||p)?Math.max(0,n*r+o-c-p):'';
+}
+function saveSlip(){
+  liveCalc();
+  const st=nv('sl_s'),en=nv('sl_e'),r=Number(v('sl_r'))||0;
+  if(st!==null&&en!==null&&en<st)return alert('End number must not be less than start number.');
+  fromDT=snap(fromDT);toDT=snap(toDT);
+  if(!fromDT||!toDT)return alert('Select the From and To date & time.');
+  if(toDT<fromDT)return alert('To date & time must be after From.');
+  if(r)settings.slipRate=r;
+  put('slips',{id:'s'+day,date:day,from:fromDT,to:toDT,start:st,end:en,rate:r,cash:Number(v('sl_c'))||0,paytm:Number(v('sl_p'))||0,over:Number(v('sl_o'))||0,short:Number(v('sl_sh'))||0});
+}
+function dailyView(){
+  const sl=slips.find(x=>x.date===day)||{},f=dayFig(sl),rate=sl.rate??settings.slipRate??20;
+  const line=(a,b)=>`<div class="item"><div class="m">${a}</div><b>${inr(b)}</b></div>`;
+  const inp=(id,l,val)=>`<div><label>${l}</label><input id="${id}" type="number" inputmode="numeric" style="padding:9px 6px${id==='sl_sh'?';opacity:.8':''}" value="${val??''}" ${id==='sl_sh'?'readonly tabindex="-1"':'oninput="liveCalc()"'}></div>`;
+  return`<h1>Daily collection</h1>
+  <div class="card"><div class="row"><b>Collection period</b><div><button class="sq" onclick="dshift(-1)">‹</button> <button class="sq" onclick="dshift(1)">›</button></div></div>
+  <label>From (date &amp; time)</label>${dtPick('f',fromDT)}
+  <label>To (date &amp; time)</label>${dtPick('t',toDT)}</div>
+  <div class="card"><b>In-slip</b>
+  <div class="two"><div><label>Start no.</label><input id="sl_s" type="number" inputmode="numeric" value="${sl.start??''}" oninput="liveCalc()"></div><div><label>End no.</label><input id="sl_e" type="number" inputmode="numeric" value="${sl.end??''}" oninput="liveCalc()"></div></div>
+  <label>Per in-slip cost (₹)</label><div class="row" style="gap:8px"><input id="sl_r" type="number" inputmode="numeric" value="${rate}" oninput="liveCalc()">${[15,20,25].map(r=>`<button onclick="document.getElementById('sl_r').value=${r};liveCalc()">₹${r}</button>`).join('')}</div>
+  <div id="sl_calc" class="note" style="margin:10px 0 0;background:var(--ac2);color:var(--ac)">${calcTxt(f.n,rate,f.ot)}</div>
+  ${inp('sl_o','Overtime collection (₹)',sl.over)}
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">${inp('sl_c','Cash ₹',sl.cash)}${inp('sl_p','PayTM ₹',sl.paytm)}${inp('sl_sh','Short ₹ (auto)',f.short||'')}</div>
+  <div class="row" style="margin-top:12px"><span class="mu sm">${sl.from?'Saved: '+sl.from.replace('T',' ')+' → '+(sl.to||'').replace('T',' '):'Not saved yet'}</span><button class="pri" onclick="saveSlip()">Save</button></div></div>
+  <div class="card"><b>Day summary</b>${line('Slip amount (slips × cost)',f.amt)}${line('+ Overtime',f.ot)}${line('Expected (slip + overtime)',f.exp)}${line('Cash',f.cash)}${line('PayTM',f.pt)}<div class="item"><div class="m">Short amount</div><b style="color:var(--er)">${inr(f.short)}</b></div>
+  <div class="item tot"><div class="m">Total collected</div><span style="color:var(--ok)">${inr(f.total)}</span></div>
+  ${f.entered?`<div class="mu sm" style="margin-top:6px">Cash + PayTM vs expected: <b style="color:${f.diff<0?'var(--er)':'var(--ok)'}">${f.diff>0?'+':''}${inr(f.diff)}</b> ${f.diff<0?'(short)':f.diff>0?'(excess)':'(matches)'}</div>`:'<div class="mu sm" style="margin-top:6px">No cash/PayTM entered, so the expected amount (slip + overtime) is counted as collected.</div>'}</div>`;
+}
+function expForm(){
+  open(`<h1>Add expense</h1><label>Item</label><select id="x_i">${settings.expItems.map(i=>`<option>${esc(i)}</option>`).join('')}</select>
+  <div class="two" style="grid-template-columns:1fr auto;margin-top:8px"><input id="x_new" placeholder="New item name"><button onclick="newItem()">Add item</button></div>
+  <div class="two"><div><label>Amount (₹)</label><input id="x_a" type="number" inputmode="numeric"></div><div><label>Date</label><input id="x_d" type="datetime-local" value="${nowDT()}"></div></div>
+  <label>Note (optional)</label><input id="x_n">
+  <div class="row" style="margin-top:16px"><button onclick="closeM()">Cancel</button><button class="pri" onclick="saveExp()">Save</button></div>`);
+}
+function newItem(){
+  const n=v('x_new').trim();if(!n)return;const sel=document.getElementById('x_i');
+  if(!settings.expItems.some(i=>i.toLowerCase()===n.toLowerCase())){settings.expItems.push(n);persist();sel.add(new Option(n,n))}
+  [...sel.options].forEach(o=>{if(o.value.toLowerCase()===n.toLowerCase())sel.value=o.value});document.getElementById('x_new').value='';
+}
+function saveExp(){const a=Number(v('x_a'));if(!a||a<=0)return alert('Enter a valid amount.');put('expenses',{id:uid(),date:v('x_d')||nowDT(),item:v('x_i'),amount:a,note:v('x_n')});closeM()}
+function expView(){
+  const m=month,E=inMonth(expenses,m).sort((a,b)=>b.date.localeCompare(a.date)),tot=sum(E),by={};
+  E.forEach(x=>by[x.item]=(by[x.item]||0)+Number(x.amount));
+  const inc=sum(inMonth(payments.filter(p=>p.kind==='rent'||p.kind==='latefee'),m))+dsum(m).total;
+  const net=inc-tot;
+  const bl=Object.keys(by).sort((a,b)=>by[b]-by[a]).map(k=>`<div class="item"><div class="m">${esc(k)}</div><b>${inr(by[k])}</b></div>`).join('');
+  const rows=E.map(x=>`<div class="item"><div class="m"><div><b>${esc(x.item)}</b></div><div class="mu sm">${x.date}${x.note?' · '+esc(x.note):''}</div></div><b>${inr(x.amount)}</b><button class="sq dng" onclick="if(confirm('Delete this expense?'))rm('expenses','${x.id}')">✕</button></div>`).join('');
+  return`<h1>Expenses</h1><div class="mon"><button class="sq" onclick="shiftM(-1)">‹</button><b>${mlabel(m)}</b><button class="sq" onclick="shiftM(1)">›</button></div>
+  <div class="grid"><div class="card"><div class="mu sm">Income (all)</div><div class="big" style="color:var(--ok)">${inr(inc)}</div></div><div class="card"><div class="mu sm">Expenses</div><div class="big" style="color:var(--er)">${inr(tot)}</div></div></div>
+  <div class="card"><div class="row"><span class="mu sm">Net for the month</span><b style="color:${net<0?'var(--er)':'var(--ok)'}">${inr(net)}</b></div><div class="mu sm" style="margin-top:4px">Income = rent + late fees + daily collection, by date received.</div></div>
+  ${bl?`<div class="card"><div class="mu sm">By item</div>${bl}</div>`:''}
+  <div class="card"><div class="mu sm">Entries</div>${rows||'<div class="empty">No expenses this month.<br>Tap “Add expense”.</div>'}</div>`;
+}
+// ---------- dashboard ----------
+const addD=(d,n)=>{const x=new Date(d+'T00:00:00');x.setDate(x.getDate()+n);return x.toLocaleDateString('en-CA')};
+const wkStart=d=>addD(d,-((new Date(d+'T00:00:00').getDay()+6)%7));
+const kfmt=n=>n>=1e5?(n/1e5).toFixed(1)+'L':n>=1000?(n/1000).toFixed(n>=1e4?0:1)+'k':String(Math.round(n));
+function lineChart(pts,avg){
+  if(!pts.length)return'<div class="empty">No daily collection recorded in this range</div>';
+  const W=320,H=160,L=40,Rr=8,T=10,B=24,max=Math.max(...pts.map(p=>p.v),1),iw=W-L-Rr,ih=H-T-B;
+  const X=i=>L+(pts.length<2?iw/2:i*iw/(pts.length-1)),Y=v=>T+ih*(1-v/max);
+  let g='';for(let i=0;i<=3;i++){const v=max*i/3,y=Y(v);g+=`<line x1="${L}" x2="${W-Rr}" y1="${y}" y2="${y}" class="ch-g"/><text x="${L-4}" y="${y+3}" text-anchor="end" class="ch-t">${kfmt(v)}</text>`}
+  const pl=pts.map((p,i)=>X(i)+','+Y(p.v)).join(' '),ya=Y(avg);
+  const dots=pts.map((p,i)=>`<circle cx="${X(i)}" cy="${Y(p.v)}" r="3" class="ch-d"><title>${p.l}: ${inr(p.v)}</title></circle>`).join('');
+  return`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Daily collection trend">${g}<polygon points="${X(0)},${Y(0)} ${pl} ${X(pts.length-1)},${Y(0)}" class="ch-a"/><polyline points="${pl}" class="ch-l"/>${dots}<line x1="${L}" x2="${W-Rr}" y1="${ya}" y2="${ya}" class="ch-v"/><text x="${W-Rr}" y="${ya-3}" text-anchor="end" class="ch-t">avg ${kfmt(avg)}</text><text x="${L}" y="${H-6}" class="ch-t">${pts[0].l}</text><text x="${W-Rr}" y="${H-6}" text-anchor="end" class="ch-t">${pts[pts.length-1].l}</text></svg>`;
+}
+function barChart(items){
+  const W=320,H=150,L=8,T=18,B=22,max=Math.max(...items.map(i=>i.v),1),n=items.length,bw=(W-2*L)/n,ih=H-T-B;
+  return`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img">${items.map((it,i)=>{const h=ih*it.v/max,x=L+i*bw+bw*.15,y=T+ih-h;
+    return`<rect x="${x}" y="${y}" width="${bw*.7}" height="${h}" rx="3" class="ch-b" style="opacity:${i===n-1?1:.55}"/><text x="${x+bw*.35}" y="${y-4}" text-anchor="middle" class="ch-t">${it.v}</text><text x="${x+bw*.35}" y="${H-6}" text-anchor="middle" class="ch-t">${it.l}</text>`}).join('')}</svg>`;
+}
+function dashView(){
+  const t=today(),st=addD(t,-(dr-1));
+  const Rr=slips.filter(x=>x.date>=st&&x.date<=t).sort((a,b)=>a.date.localeCompare(b.date)).map(x=>({d:x.date,...dayFig(x)}));
+  const nd=Rr.length||1,A=k=>Rr.reduce((q,x)=>q+x[k],0)/nd,cash=A('cash'),pt=A('pt');
+  const best=Rr.length?Rr.reduce((a,b)=>b.total>a.total?b:a):null,low=Rr.length?Rr.reduce((a,b)=>b.total<a.total?b:a):null;
+  const share=cash+pt?Math.round(cash/(cash+pt)*100):0;
+  // monthly (car) rent
+  const cur=ym(new Date()),rp=payments.filter(p=>p.kind==='rent'&&idx(p.month)<=idx(cur));
+  const ms=rp.map(p=>p.month).concat(tenants.map(x=>x.start)).sort(),span=ms.length?idx(cur)-idx(ms[0])+1:0;
+  const avgRent=span?sum(rp)/span:0,occ=tenants.filter(x=>active(x,cur)).length;
+  // bike rent (any bike entries saved earlier)
+  const bd={};bikes.forEach(x=>{bd[x.date]=(bd[x.date]||0)+Number(x.amount)});const bdays=Object.keys(bd).length,bavg=bdays?sum(bikes)/bdays:0;
+  // comparisons
+  const slipN=(a,b)=>slips.filter(x=>x.date>=a&&x.date<=b).reduce((q,x)=>q+dayFig(x).n,0);
+  const wn=wkStart(t),W8=Array.from({length:8},(_,i)=>{const ws=addD(wn,-7*(7-i));return{l:ws.slice(8)+'/'+ws.slice(5,7),v:slipN(ws,addD(ws,6))}});
+  const M6=Array.from({length:6},(_,i)=>{const m=shift(cur,-(5-i));return{l:mlabel(m).slice(0,3),v:inMonth(slips,m).reduce((q,x)=>q+dayFig(x).n,0)}});
+  const chg=(a,b,w)=>b?`${a>=b?'▲':'▼'} ${Math.abs(Math.round((a-b)/b*100))}% vs ${w}`:'';
+  const card=(l,v,sub,c)=>`<div class="card"><div class="mu sm">${l}</div><div class="big"${c?` style="color:var(--${c})"`:''}>${v}</div><div class="mu sm">${sub||'&nbsp;'}</div></div>`;
+  return`<div class="row"><h1>Dashboard</h1><div class="rng">${[7,30,90].map(n=>`<button class="${dr===n?'on':''}" onclick="dr=${n};render()">${n}d</button>`).join(' ')}</div></div>
+  <div class="mu sm" style="margin:-6px 0 10px">Last ${dr} days · ${Rr.length} day${Rr.length===1?'':'s'} with collection recorded</div>
+  <div class="grid">${card('Avg daily collection',inr(A('total')),'total '+inr(Rr.reduce((q,x)=>q+x.total,0)),'ok')}${card('Avg in-slips / day',Math.round(A('n')*10)/10,'')}
+  ${card('Avg cash / day',inr(cash),share+'% of cash + PayTM')}${card('Avg PayTM / day',inr(pt),(cash+pt?100-share:0)+'% of cash + PayTM')}
+  ${card('Avg overtime / day',inr(A('ot')),'')}${card('Avg short / day',inr(A('short')),'','er')}</div>
+  <div class="card"><div class="mu sm">Cash vs PayTM</div><div class="bar" style="height:12px"><i style="width:${share}%"></i></div><div class="row sm" style="margin-top:4px"><span>Cash ${share}%</span><span>PayTM ${cash+pt?100-share:0}%</span></div></div>
+  <div class="grid">${card('Car rent · avg / month',inr(avgRent),span?`over ${span} month${span>1?'s':''}`:'no rent recorded')}${card('Car rent · avg / slot',inr(occ?avgRent/occ:0),occ+' slots occupied now')}</div>
+  <div class="card"><div class="row"><div><div class="mu sm">Bike rent · avg / day</div><div class="big">${inr(bavg)}</div></div><div class="mu sm" style="text-align:right">${bdays?bdays+' days · '+inr(sum(bikes))+' total':'No bike-rent entries<br>(Bike tab was removed)'}</div></div></div>
+  <div class="card"><b>Daily collection · ups &amp; downs</b>${lineChart(Rr.map(x=>({l:x.d.slice(8)+'/'+x.d.slice(5,7),v:x.total})),A('total'))}
+  ${best?`<div class="row sm" style="margin-top:6px"><span>Highest: <b style="color:var(--ok)">${inr(best.total)}</b> (${best.d.slice(8)}/${best.d.slice(5,7)})</span><span>Lowest: <b style="color:var(--er)">${inr(low.total)}</b> (${low.d.slice(8)}/${low.d.slice(5,7)})</span></div>`:''}</div>
+  <div class="card"><div class="row"><b>In-slips · week-wise</b><span class="mu sm">${chg(W8[7].v,W8[6].v,'last week')}</span></div><div class="mu sm">Weeks starting Monday (dd/mm) · latest week highlighted</div>${barChart(W8)}</div>
+  <div class="card"><div class="row"><b>In-slips · month-wise</b><span class="mu sm">${chg(M6[5].v,M6[4].v,'last month')}</span></div>${barChart(M6)}</div>`;
+}
+// ---------- yearly summary ----------
+function yearView(){
+  let E=0,C=0;const yy=String(yr);
+  const rows=Array.from({length:12},(_,i)=>{
+    const m=yy+'-'+String(i+1).padStart(2,'0'),e=tenants.filter(t=>active(t,m)).reduce((s,t)=>s+t.rent,0),c=sum(payments.filter(p=>p.kind==='rent'&&p.month===m));E+=e;C+=c;
+    const w=e?Math.min(100,c/e*100):0;
+    return`<div class="item"><div style="width:34px" class="mu sm">${mlabel(m).slice(0,3)}</div><div class="m"><div class="bar" style="margin:0"><i style="width:${w}%"></i></div></div><div class="sm" style="text-align:right;min-width:112px">${inr(c)} / ${inr(e)}</div></div>`}).join('');
+  const Y={n:0,cash:0,pt:0,ot:0,short:0,total:0};let XT=0;
+  const mrows=Array.from({length:12},(_,i)=>{const m=yy+'-'+String(i+1).padStart(2,'0'),r=sum(payments.filter(p=>p.kind==='rent'&&p.month===m)),D=dsum(m),x=sum(inMonth(expenses,m));
+    Y.n+=D.n;Y.cash+=D.cash;Y.pt+=D.pt;Y.ot+=D.ot;Y.short+=D.short;Y.total+=D.total;XT+=x;return{m,r,d:D.total,x,net:r+D.total-x}});
+  const mtab=mrows.map(o=>`<div class="yr"><span>${mlabel(o.m).slice(0,3)}</span><span>${inr(o.r)}</span><span>${inr(o.d)}</span><span>${inr(o.x)}</span><b style="color:${o.net<0?'var(--er)':'var(--ok)'}">${inr(o.net)}</b></div>`).join('');
+  const rev=C+Y.total,net=rev-XT;
+  const yp=k=>sum(payments.filter(p=>p.kind===k&&(p.date||'').startsWith(yy)));
+  const trows=tenants.map(t=>{let n=0;for(let i=1;i<=12;i++)if(active(t,yy+'-'+String(i).padStart(2,'0')))n++;
+    const paid=sum(pays(t,'rent').filter(p=>p.month.startsWith(yy))),bal=t.rent*n-paid;return n?{t,paid,bal}:null}).filter(Boolean).sort((a,b)=>a.t.slot-b.t.slot).map(({t,paid,bal})=>
+    `<div class="item"><div class="slot">${esc(t.slot)}</div><div class="m"><div><b>${esc(t.name)}</b></div><div class="mu sm">Paid ${inr(paid)}</div></div>${bal>0?`<span class="chip unp">${inr(bal)} short</span>`:'<span class="chip paid">Clear</span>'}</div>`).join('');
+  return`<h1>Yearly summary</h1>
+  <div class="mon"><button class="sq" onclick="yr--;render()">‹</button><b>${yr}</b><button class="sq" onclick="yr++;render()">›</button></div>
+  <div class="grid"><div class="card"><div class="mu sm">Rent collected</div><div class="big" style="color:var(--ok)">${inr(C)}</div></div><div class="card"><div class="mu sm">Rent short</div><div class="big" style="color:var(--er)">${inr(Math.max(0,E-C))}</div></div>
+  <div class="card"><div class="mu sm">Late fees collected</div><div class="big">${inr(yp('latefee'))}</div></div><div class="card"><div class="mu sm">Deposits in / out</div><div class="big" style="font-size:16px">${inr(yp('deposit'))} / ${inr(yp('refund'))}</div></div></div>
+  <div class="grid"><div class="card"><div class="mu sm">Daily collection</div><div class="big">${inr(Y.total)}</div><div class="mu sm">${Y.n} slips</div></div><div class="card"><div class="mu sm">Total revenue</div><div class="big" style="color:var(--ok)">${inr(rev)}</div><div class="mu sm">Rent + daily</div></div>
+  <div class="card"><div class="mu sm">Total expenses</div><div class="big" style="color:var(--er)">${inr(XT)}</div></div><div class="card"><div class="mu sm">Net</div><div class="big" style="color:${net<0?'var(--er)':'var(--ok)'}">${inr(net)}</div></div></div>
+  <div class="card"><div class="mu sm">Daily collection split</div><div class="item"><div class="m">Cash</div><b>${inr(Y.cash)}</b></div><div class="item"><div class="m">PayTM</div><b>${inr(Y.pt)}</b></div><div class="item"><div class="m">Overtime (included)</div><b>${inr(Y.ot)}</b></div><div class="item"><div class="m">Short amount</div><b style="color:var(--er)">${inr(Y.short)}</b></div></div>
+  <div class="card" style="overflow-x:auto"><div class="mu sm">Month-wise revenue &amp; expenses</div><div style="min-width:400px"><div class="yr mu"><span></span><span>Rent</span><span>Daily</span><span>Expenses</span><span>Net</span></div>${mtab}</div></div>
+  <div class="card"><div class="mu sm">Collected / expected per month</div>${rows}</div>
+  <div class="card"><div class="mu sm">Per tenant</div>${trows||'<div class="empty">No data for this year.</div>'}</div>`;
+}
+init();
+</script></body></html>
