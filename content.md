@@ -14,3 +14,47 @@ const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const today=()=>new Date().toLocaleDateString('en-CA');
 const snap=t=>t.slice(0,14)+String(Math.floor(+t.slice(14,16)/15)*15).padStart(2,'0');
 const nowDT=()=>today()+'T'+new Date().toTimeString().slice(0,5);
+
+  const L=tenants.filter(t=>active(t,month)),col=L.reduce((s,t)=>s+paidIn(t,month),0),exp=L.reduce((s,t)=>s+t.rent,0);
+  const pend=tenants.reduce((s,t)=>s+Math.max(0,pending(t,month)),0),dep=tenants.reduce((s,t)=>s+deposit(t),0);
+  const pct=exp?Math.min(100,col/exp*100):0,D=dsum(month),X=sum(inMonth(expenses,month));
+  const rows=L.sort((a,b)=>a.slot-b.slot).map(t=>{const p=Math.max(0,pending(t,month));
+
+
+{/* RENT PROGRESS */}
+      <div className="card">
+        <div className="row sm">
+          <span className="mu">This month's rent</span>
+
+          <span>
+            {inr(collected)} of {inr(expected)}
+          </span>
+        </div>
+
+        <div className="bar">
+          <i
+            style={{
+              width: `${
+                expected ? Math.min(100, (collected / expected) * 100) : 0
+              }%`,
+            }}
+          />
+        </div>
+      </div>
+
+      {/* TENANTS */}
+      <div className="card">
+        {renderRows.length ? (
+          renderRows
+        ) : (
+          <div className="empty">
+            No tenants yet.
+            <br />
+            Open the Tenants tab to add one.
+          </div>
+        )}
+      </div>
+
+between rent process and tenent, i need this 
+
+

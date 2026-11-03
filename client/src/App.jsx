@@ -355,7 +355,7 @@ function App() {
         )}
         {/* MONTHLY TAB */}
         {tab === "home" && (
-          <Monthly
+        <Monthly
             tenants={tenants}
             payments={payments}
             settings={settings}
@@ -365,6 +365,8 @@ function App() {
             collected={collected}
             expected={expected}
             totalDue={totalDue}
+            slips={slips}
+            expenses={expenses}
             setMonth={setMonth}
             setModal={setModal}
             openReminder={openReminder}
