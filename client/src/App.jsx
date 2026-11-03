@@ -26,6 +26,8 @@ import ExpenseForm from "./components/ExpenseForm";
 
 import Daily from "./components/Daily";
 
+import Dashboard from "./components/Dashboard";
+
 const useEffect = (effect, dependencies) =>
   reactUseEffect(() => {
     effect();
@@ -42,7 +44,7 @@ function App() {
     },
   });
 
-  const [tab, setTab] = useState("home");
+  const [tab, setTab] = useState("dash");
   const [month, setMonth] = useState(currentMonth());
   const [modal, setModal] = useState(null);
   const [error, setError] = useState("");
@@ -343,7 +345,14 @@ function App() {
     <>
       <main>
         {error && <div className="note">{error}</div>}
-
+        {tab === "dash" && (
+          <Dashboard
+            slips={slips}
+            payments={payments}
+            tenants={tenants}
+            // bikes={bikes}
+          />
+        )}
         {/* MONTHLY TAB */}
         {tab === "home" && (
           <Monthly
@@ -375,8 +384,6 @@ function App() {
             remind={remind}
           />
         )}
-
-        
 
         {/* DAILY TAB */}
         {tab === "daily" && (
@@ -419,6 +426,7 @@ function App() {
       {/* NAVIGATION */}
       <nav>
         {[
+          ["dash", "Dash"],
           ["home", "Monthly"],
           ["tenants", "Tenants"],
           ["daily", "Daily"],
