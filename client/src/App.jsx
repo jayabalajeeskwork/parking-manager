@@ -355,7 +355,7 @@ function App() {
         )}
         {/* MONTHLY TAB */}
         {tab === "home" && (
-        <Monthly
+          <Monthly
             tenants={tenants}
             payments={payments}
             settings={settings}
@@ -416,9 +416,10 @@ function App() {
             tenants={tenants}
             payments={payments}
             year={Number(month.slice(0, 4))}
+            slips={slips}
+            expenses={expenses}
             onYear={(newYear) => {
               const currentMonthNumber = month.slice(5, 7);
-
               setMonth(`${newYear}-${currentMonthNumber}`);
             }}
           />
