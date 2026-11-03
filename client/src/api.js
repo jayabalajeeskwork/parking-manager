@@ -90,6 +90,21 @@ export const api = {
     req("/expenses/" + id, {
       method: "DELETE",
     }),
+
+
+//slips
+  getSlips: () => req("/slips"),
+
+saveSlip: (date, data) =>
+  req("/slips/" + date, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  }),
+
+deleteSlip: (date) =>
+  req("/slips/" + date, {
+    method: "DELETE",
+  }),
 };
 
 
