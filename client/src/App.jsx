@@ -21,10 +21,8 @@ import Tenants from "./components/Tenants";
 import Year from "./components/Year";
 import { TenantForm, PaymentForm, Detail, Settings } from "./components/Models";
 
-
 import Expenses from "./components/Expenses";
 import ExpenseForm from "./components/ExpenseForm";
-
 
 const useEffect = (effect, dependencies) =>
   reactUseEffect(() => {
@@ -67,11 +65,11 @@ function App() {
   };
 
   const reloadExpenses = () => {
-  api
-    .getExpenses()
-    .then((data) => setExpenses(data))
-    .catch((e) => setError(e.message));
-};
+    api
+      .getExpenses()
+      .then((data) => setExpenses(data))
+      .catch((e) => setError(e.message));
+  };
 
   useEffect(reload, []);
   useEffect(reloadExpenses, []);
@@ -232,6 +230,9 @@ function App() {
     })),
   );
 
+  //expense - Collected
+  const income = collected;
+
   const expected = sum(
     live.map((tenant) => ({
       amount: tenant.rent,
@@ -254,31 +255,30 @@ function App() {
     });
   };
 
-
   ///Expenses
   // SAVE EXPENSE
-const saveExpense = async (form) => {
-  try {
-    await api.createExpense(form);
+  const saveExpense = async (form) => {
+    try {
+      await api.createExpense(form);
 
-    await reloadExpenses();
+      await reloadExpenses();
 
-    setModal(null);
-  } catch (e) {
-    alert(e.message);
-  }
-};
+      setModal(null);
+    } catch (e) {
+      alert(e.message);
+    }
+  };
 
-// DELETE EXPENSE
-const deleteExpense = async (id) => {
-  try {
-    await api.deleteExpense(id);
+  // DELETE EXPENSE
+  const deleteExpense = async (id) => {
+    try {
+      await api.deleteExpense(id);
 
-    await reloadExpenses();
-  } catch (e) {
-    alert(e.message);
-  }
-};
+      await reloadExpenses();
+    } catch (e) {
+      alert(e.message);
+    }
+  };
   return (
     <>
       <main>
@@ -331,33 +331,34 @@ const deleteExpense = async (id) => {
         )}
 
         {/* EXPENSES TAB */}
-{tab === "expenses" && (
-  <Expenses
-    expenses={expenses}
-    month={month}
-    setMonth={setMonth}
-    setModal={setModal}
-    onDelete={deleteExpense}
-  />
-)}
+        {tab === "expenses" && (
+          <Expenses
+            expenses={expenses}
+            income={income}
+            month={month}
+            setMonth={setMonth}
+            setModal={setModal}
+            onDelete={deleteExpense}
+          />
+        )}
       </main>
 
       {/* NAVIGATION */}
       <nav>
         {[
-  ["home", "Monthly"],
-  ["tenants", "Tenants"],
-  ["year", "Year"],
-  ["expenses", "Expenses"],
-].map(([id, label]) => (
-  <button
-    className={tab === id ? "on" : ""}
-    onClick={() => setTab(id)}
-    key={id}
-  >
-    {label}
-  </button>
-))}
+          ["home", "Monthly"],
+          ["tenants", "Tenants"],
+          ["year", "Year"],
+          ["expenses", "Expenses"],
+        ].map(([id, label]) => (
+          <button
+            className={tab === id ? "on" : ""}
+            onClick={() => setTab(id)}
+            key={id}
+          >
+            {label}
+          </button>
+        ))}
       </nav>
 
       {/* NEW TENANT */}
@@ -444,16 +445,10 @@ const deleteExpense = async (id) => {
         />
       )}
 
-
       {/* EXPENSE FORM */}
-{modal?.type === "expense" && (
-  <ExpenseForm
-    onClose={() => setModal(null)}
-    onSave={saveExpense}
-  />
-)}
-
-    
+      {modal?.type === "expense" && (
+        <ExpenseForm onClose={() => setModal(null)} onSave={saveExpense} />
+      )}
     </>
   );
 }
