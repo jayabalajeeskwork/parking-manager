@@ -260,10 +260,10 @@ function App() {
       const paytm = Number(s.paytm || 0);
 
       //const totalCollected = !cash && !paytm ? expected : cash + paytm;
-const extra = Number(s.extra || 0);
+      const extra = Number(s.extra || 0);
 
-const totalCollected =
-  (!cash && !paytm ? expected : cash + paytm) + extra;
+      const totalCollected =
+        (!cash && !paytm ? expected : cash + paytm) + extra;
       return total + totalCollected;
     }, 0);
 
@@ -317,11 +317,25 @@ const totalCollected =
   };
 
   // slip - daily
-  const saveSlip = async (form) => {
+  // slip - daily
+  const saveSlip = async (form, entryId) => {
     try {
-      await api.saveSlip(day, form);
+      const entryDate = form.from.slice(0, 10);
 
-      // Save the selected rate in existing settings
+      let saved;
+
+      if (entryId) {
+        saved = await api.updateSlip(entryId, {
+          ...form,
+          date: entryDate,
+        });
+      } else {
+        saved = await api.createSlip({
+          ...form,
+          date: entryDate,
+        });
+      }
+
       if (form.rate) {
         await api.saveSettings({
           ...settings,
@@ -330,20 +344,50 @@ const totalCollected =
       }
 
       await reloadSlips();
-      alert("Daily collection saved");
+
+      alert(entryId ? "Entry updated" : "New collection entry added");
+
+      return saved;
     } catch (e) {
       alert(e.message);
+      return null;
     }
   };
-
-  const deleteSlip = async (date) => {
+  const deleteSlip = async (id) => {
     try {
-      await api.deleteSlip(date);
+      await api.deleteSlip(id);
       await reloadSlips();
     } catch (e) {
       alert(e.message);
     }
   };
+  // const saveSlip = async (form) => {
+  //   try {
+  //     await api.saveSlip(day, form);
+
+  //     // Save the selected rate in existing settings
+  //     if (form.rate) {
+  //       await api.saveSettings({
+  //         ...settings,
+  //         slipRate: Number(form.rate),
+  //       });
+  //     }
+
+  //     await reloadSlips();
+  //     alert("Daily collection saved");
+  //   } catch (e) {
+  //     alert(e.message);
+  //   }
+  // };
+
+  // const deleteSlip = async (date) => {
+  //   try {
+  //     await api.deleteSlip(date);
+  //     await reloadSlips();
+  //   } catch (e) {
+  //     alert(e.message);
+  //   }
+  // };
   return (
     <>
       <main>

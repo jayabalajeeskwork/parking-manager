@@ -1,3 +1,4 @@
+
 import mongoose from "mongoose";
 
 const slipSchema = new mongoose.Schema(
@@ -5,7 +6,6 @@ const slipSchema = new mongoose.Schema(
     date: {
       type: String,
       required: true,
-      unique: true,
       match: /^\d{4}-\d{2}-\d{2}$/,
     },
 
@@ -48,18 +48,16 @@ const slipSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+
     extra: {
       type: Number,
       default: 0,
     },
+
     short: {
       type: Number,
       default: 0,
     },
-    entryId: {
-  type: String,
-  required: true,
-},
   },
   { timestamps: true }
 );
