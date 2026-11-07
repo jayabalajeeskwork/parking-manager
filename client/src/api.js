@@ -95,6 +95,12 @@ export const api = {
 //slips
   getSlips: () => req("/slips"),
 
+  createSlip: (data) =>
+  req("/slips", {
+    method: "POST",
+    body: JSON.stringify(data),
+  }),
+  
 saveSlip: (date, data) =>
   req("/slips/" + date, {
     method: "PUT",
@@ -105,6 +111,7 @@ deleteSlip: (date) =>
   req("/slips/" + date, {
     method: "DELETE",
   }),
+  
 };
 
 
