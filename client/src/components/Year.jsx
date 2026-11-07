@@ -73,50 +73,49 @@ function Year({ tenants, payments, year, onYear, slips = [], expenses = [] }) {
   );
 
   const dailySummary = yearlySlips.reduce(
-  (result, slip) => {
-    const count =
-      slip.start != null && slip.end != null && slip.end >= slip.start
-        ? slip.end - slip.start + 1
-        : 0;
+    (result, slip) => {
+      const count =
+        slip.start != null && slip.end != null && slip.end >= slip.start
+          ? slip.end - slip.start + 1
+          : 0;
 
-    const amount = count * Number(slip.rate || 0);
-    const overtime = Number(slip.over || 0);
-    const extra = Number(slip.extra || 0);
+      const amount = count * Number(slip.rate || 0);
+      const overtime = Number(slip.over || 0);
+      const extra = Number(slip.extra || 0);
 
-    // Expected = Slip amount + Overtime + Others
-    const expected = amount + overtime + extra;
+      // Expected = Slip amount + Overtime + Others
+      const expected = amount + overtime + extra;
 
-    const cash = Number(slip.cash || 0);
-    const paytm = Number(slip.paytm || 0);
+      const cash = Number(slip.cash || 0);
+      const paytm = Number(slip.paytm || 0);
 
-    const noPayment = !cash && !paytm;
+      const noPayment = !cash && !paytm;
 
-    // When no payment is entered, count the expected amount
-    // excluding Others here, then add Others separately.
-    const collected = noPayment ? expected - extra : cash + paytm;
+      // When no payment is entered, count the expected amount
+      // excluding Others here, then add Others separately.
+      const collected = noPayment ? expected - extra : cash + paytm;
 
-    result.n += count;
-    result.cash += noPayment ? expected - extra : cash;
-    result.pt += paytm;
-    result.ot += overtime;
-    result.extra += extra;
-    result.short += noPayment
-      ? 0
-      : Math.max(0, expected - collected - extra);
-    result.total += collected + extra;
+      result.n += count;
+      result.cash += noPayment ? expected - extra : cash;
+      result.pt += paytm;
+      result.ot += overtime;
+      result.extra += extra;
+      result.short += noPayment ? 0 : Math.max(0, expected - collected - extra);
+      // result.total += collected + extra;
+      result.total += collected;
 
-    return result;
-  },
-  {
-    n: 0,
-    cash: 0,
-    pt: 0,
-    ot: 0,
-    extra: 0,
-    short: 0,
-    total: 0,
-  },
-);
+      return result;
+    },
+    {
+      n: 0,
+      cash: 0,
+      pt: 0,
+      ot: 0,
+      extra: 0,
+      short: 0,
+      total: 0,
+    },
+  );
 
   // const dailySummary = yearlySlips.reduce(
   //   (result, slip) => {
@@ -202,26 +201,27 @@ function Year({ tenants, payments, year, onYear, slips = [], expenses = [] }) {
     );
 
     const daily = monthDailySlips.reduce((total, slip) => {
-  const count =
-    slip.start != null && slip.end != null && slip.end >= slip.start
-      ? slip.end - slip.start + 1
-      : 0;
+      const count =
+        slip.start != null && slip.end != null && slip.end >= slip.start
+          ? slip.end - slip.start + 1
+          : 0;
 
-  const amount = count * Number(slip.rate || 0);
-  const overtime = Number(slip.over || 0);
-  const extra = Number(slip.extra || 0);
+      const amount = count * Number(slip.rate || 0);
+      const overtime = Number(slip.over || 0);
+      const extra = Number(slip.extra || 0);
 
-  const expected = amount + overtime + extra;
+      const expected = amount + overtime + extra;
 
-  const cash = Number(slip.cash || 0);
-  const paytm = Number(slip.paytm || 0);
+      const cash = Number(slip.cash || 0);
+      const paytm = Number(slip.paytm || 0);
 
-  const noPayment = !cash && !paytm;
+      const noPayment = !cash && !paytm;
 
-  const collected = noPayment ? expected - extra : cash + paytm;
+      const collected = noPayment ? expected - extra : cash + paytm;
 
-  return total + collected + extra;
-}, 0);
+      // return total + collected + extra;
+      return total + collected;
+    }, 0);
     // const daily = monthDailySlips.reduce((total, slip) => {
     //   const count =
     //     slip.start != null && slip.end != null && slip.end >= slip.start
@@ -397,9 +397,9 @@ function Year({ tenants, payments, year, onYear, slips = [], expenses = [] }) {
           <b>{formatCurrency(dailySummary.ot)}</b>
         </div>
         <div className="item">
-  <div className="m">Others</div>
-  <b>{formatCurrency(dailySummary.extra)}</b>
-</div>
+          <div className="m">Others</div>
+          <b>{formatCurrency(dailySummary.extra)}</b>
+        </div>
 
         <div className="item">
           <div className="m">Short amount</div>
@@ -415,8 +415,6 @@ function Year({ tenants, payments, year, onYear, slips = [], expenses = [] }) {
 
         {/* MONTH-WISE REVENUE & EXPENSES */}
         <div className="card" style={{ overflowX: "auto" }}>
-          
-
           <div
             style={{
               minWidth: "520px",

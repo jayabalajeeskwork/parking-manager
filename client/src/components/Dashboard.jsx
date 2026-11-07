@@ -52,38 +52,39 @@ function Dashboard({ slips = [], payments = [], tenants = [], bikes = [] }) {
 
   // DAILY COLLECTION CALCULATION
   // DAILY COLLECTION CALCULATION
-const getDayFigure = (item = {}) => {
-  const count =
-    item.start != null && item.end != null && item.end >= item.start
-      ? Number(item.end) - Number(item.start) + 1
-      : 0;
+  const getDayFigure = (item = {}) => {
+    const count =
+      item.start != null && item.end != null && item.end >= item.start
+        ? Number(item.end) - Number(item.start) + 1
+        : 0;
 
-  const amount = count * Number(item.rate || 0);
-  const cash = Number(item.cash || 0);
-  const paytm = Number(item.paytm || 0);
-  const overtime = Number(item.over || 0);
-  const extra = Number(item.extra || 0);
+    const amount = count * Number(item.rate || 0);
+    const cash = Number(item.cash || 0);
+    const paytm = Number(item.paytm || 0);
+    const overtime = Number(item.over || 0);
+    const extra = Number(item.extra || 0);
 
-  // Expected = Slip amount + Overtime + Others
-  const expected = amount + overtime + extra;
+    // Expected = Slip amount + Overtime + Others
+    const expected = amount + overtime + extra;
 
-  const noEntry = !cash && !paytm;
+    const noEntry = !cash && !paytm;
 
-  // Avoid double-counting Others when Cash and PayTM are empty
-  const collected = noEntry ? expected - extra : cash + paytm;
+    // Avoid double-counting Others when Cash and PayTM are empty
+    const collected = noEntry ? expected - extra : cash + paytm;
 
-  return {
-    count,
-    amount,
-    overtime,
-    extra,
-    expected,
-    cash: noEntry ? expected - extra : cash,
-    paytm,
-    total: collected + extra,
-    short: noEntry ? 0 : Math.max(0, expected - collected - extra),
+    return {
+      count,
+      amount,
+      overtime,
+      extra,
+      expected,
+      cash: noEntry ? expected - extra : cash,
+      paytm,
+      total: collected,
+      // total: collected + extra,
+      short: noEntry ? 0 : Math.max(0, expected - collected - extra),
+    };
   };
-};
   // const getDayFigure = (item = {}) => {
   //   const count =
   //     item.start != null && item.end != null && item.end >= item.start
@@ -240,35 +241,33 @@ const getDayFigure = (item = {}) => {
   };
   // DAILY COLLECTION · LAST 6 MONTHS
   const getMonthSummary = (month) => {
-  const monthSlips = slips.filter(
-    (item) => item.date?.slice(0, 7) === month,
-  );
+    const monthSlips = slips.filter((item) => item.date?.slice(0, 7) === month);
 
-  return monthSlips.reduce(
-    (total, item) => {
-      const figure = getDayFigure(item);
+    return monthSlips.reduce(
+      (total, item) => {
+        const figure = getDayFigure(item);
 
-      total.n += figure.count;
-      total.cash += figure.cash;
-      total.pt += figure.paytm;
-      total.ot += figure.overtime; // ADD THIS
-      total.extra += figure.extra;
-      total.total += figure.total;
-      total.short += figure.short;
+        total.n += figure.count;
+        total.cash += figure.cash;
+        total.pt += figure.paytm;
+        total.ot += figure.overtime; // ADD THIS
+        total.extra += figure.extra;
+        total.total += figure.total;
+        total.short += figure.short;
 
-      return total;
-    },
-    {
-      n: 0,
-      cash: 0,
-      pt: 0,
-      ot: 0,
-      extra: 0,
-      total: 0,
-      short: 0,
-    },
-  );
-};
+        return total;
+      },
+      {
+        n: 0,
+        cash: 0,
+        pt: 0,
+        ot: 0,
+        extra: 0,
+        total: 0,
+        short: 0,
+      },
+    );
+  };
   const monthlyRevenue = Array.from({ length: 6 }, (_, i) => {
     const month = shiftMonth(currentMonth, -(5 - i));
     const summary = getMonthSummary(month);
@@ -288,17 +287,17 @@ const getDayFigure = (item = {}) => {
   );
 
   const revenueTotals = monthlyRevenue.reduce(
-  (total, item) => ({
-    n: total.n + item.summary.n,
-    cash: total.cash + item.summary.cash,
-    pt: total.pt + item.summary.pt,
-    ot: total.ot + item.summary.ot,
-    extra: total.extra + item.summary.extra,
-    total: total.total + item.value,
-    short: total.short + item.summary.short,
-  }),
-  { n: 0, cash: 0, pt: 0, ot: 0, extra: 0, total: 0, short: 0 },
-);
+    (total, item) => ({
+      n: total.n + item.summary.n,
+      cash: total.cash + item.summary.cash,
+      pt: total.pt + item.summary.pt,
+      ot: total.ot + item.summary.ot,
+      extra: total.extra + item.summary.extra,
+      total: total.total + item.value,
+      short: total.short + item.summary.short,
+    }),
+    { n: 0, cash: 0, pt: 0, ot: 0, extra: 0, total: 0, short: 0 },
+  );
 
   // SUMMARY CARD
   const SummaryCard = ({ title, value, subtitle, color }) => (
@@ -591,9 +590,9 @@ const getDayFigure = (item = {}) => {
           value={formatMoney(averageOvertime)}
         />
         <SummaryCard
-  title="Avg Others / day"
-  value={formatMoney(averageExtra)}
-/>
+          title="Avg Others / day"
+          value={formatMoney(averageExtra)}
+        />
 
         <SummaryCard
           title="Avg short / day"
@@ -728,69 +727,69 @@ const getDayFigure = (item = {}) => {
         <BarChart2 items={monthlyRevenue} money />
 
         <div style={{ overflowX: "auto", marginTop: "8px" }}>
-  <div style={{ minWidth: "500px" }}>
-    <div className="dw mu" style={{ cursor: "default" }}>
-      <span>Month</span>
-      <span>Slips</span>
-      <span>Cash</span>
-      <span>PayTM</span>
-      <span>Overtime</span>
-      <span>Others</span>
-      <span>Total</span>
-      <span>Short</span>
-    </div>
+          <div style={{ minWidth: "500px" }}>
+            <div className="dw mu" style={{ cursor: "default" }}>
+              <span>Month</span>
+              <span>Slips</span>
+              <span>Cash</span>
+              <span>PayTM</span>
+              <span>Overtime</span>
+              <span>Others</span>
+              <span>Total</span>
+              <span>Short</span>
+            </div>
 
-    {monthlyRevenue.map((item) => (
-      <div
-        className="dw"
-        style={{ cursor: "default" }}
-        key={item.month}
-      >
-        <span>
-          {item.label} {item.month.slice(2, 4)}
-        </span>
+            {monthlyRevenue.map((item) => (
+              <div
+                className="dw"
+                style={{ cursor: "default" }}
+                key={item.month}
+              >
+                <span>
+                  {item.label} {item.month.slice(2, 4)}
+                </span>
 
-        <span>{item.summary.n}</span>
+                <span>{item.summary.n}</span>
 
-        <span>{formatMoney(item.summary.cash)}</span>
+                <span>{formatMoney(item.summary.cash)}</span>
 
-        <span>{formatMoney(item.summary.pt)}</span>
+                <span>{formatMoney(item.summary.pt)}</span>
 
-        <span>{formatMoney(item.summary.ot)}</span>
+                <span>{formatMoney(item.summary.ot)}</span>
 
-        <span>{formatMoney(item.summary.extra)}</span>
+                <span>{formatMoney(item.summary.extra)}</span>
 
-        <b>{formatMoney(item.value)}</b>
+                <b>{formatMoney(item.value)}</b>
 
-        <span
-          style={{
-            color: item.summary.short ? "var(--er)" : "var(--mu)",
-          }}
-        >
-          {formatMoney(item.summary.short)}
-        </span>
-      </div>
-    ))}
+                <span
+                  style={{
+                    color: item.summary.short ? "var(--er)" : "var(--mu)",
+                  }}
+                >
+                  {formatMoney(item.summary.short)}
+                </span>
+              </div>
+            ))}
 
-    <div className="dw tot" style={{ cursor: "default" }}>
-      <span>6 mo.</span>
+            <div className="dw tot" style={{ cursor: "default" }}>
+              <span>6 mo.</span>
 
-      <span>{revenueTotals.n}</span>
+              <span>{revenueTotals.n}</span>
 
-      <span>{formatMoney(revenueTotals.cash)}</span>
+              <span>{formatMoney(revenueTotals.cash)}</span>
 
-      <span>{formatMoney(revenueTotals.pt)}</span>
+              <span>{formatMoney(revenueTotals.pt)}</span>
 
-      <span>{formatMoney(revenueTotals.ot)}</span>
+              <span>{formatMoney(revenueTotals.ot)}</span>
 
-      <span>{formatMoney(revenueTotals.extra)}</span>
+              <span>{formatMoney(revenueTotals.extra)}</span>
 
-      <b>{formatMoney(revenueTotals.total)}</b>
+              <b>{formatMoney(revenueTotals.total)}</b>
 
-      <span>{formatMoney(revenueTotals.short)}</span>
-    </div>
-  </div>
-</div>
+              <span>{formatMoney(revenueTotals.short)}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

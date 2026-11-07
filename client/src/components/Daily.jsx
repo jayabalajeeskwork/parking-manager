@@ -46,7 +46,7 @@ function dayFig(x = {}) {
     cash: none ? exp : c,
     pt: p,
     extra,
-    total: col + extra,
+    total: col,
     short: none ? 0 : Math.max(0, exp - col - extra),
     diff: none ? 0 : col + extra - exp,
     entered: !none,
@@ -596,17 +596,15 @@ function Daily({ slips = [], settings = {}, day, setDay, onSave, onDelete }) {
                 : "Not saved yet"}
           </span>
 
-        {selectedEntryId === "new" ? (
-  <button className="pri" type="button" onClick={handleSave}>
-    Save New Entry
-  </button>
-) : savedSlip ? (
-  null
-) : (
-  <button className="pri" type="button" onClick={handleSave}>
-    Save
-  </button>
-)}
+          {selectedEntryId === "new" ? (
+            <button className="pri" type="button" onClick={handleSave}>
+              Save New Entry
+            </button>
+          ) : savedSlip ? null : (
+            <button className="pri" type="button" onClick={handleSave}>
+              Save
+            </button>
+          )}
         </div>
 
         {savedSlip && (
